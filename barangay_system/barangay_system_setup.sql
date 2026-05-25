@@ -1,54 +1,59 @@
--- ============================================================
--- Barangay Service Management System
--- Database Setup Script
--- Run this in phpMyAdmin > barangay_system > SQL tab
--- ============================================================
+USERS TABLE
+CREATE TABLE IF NOT EXISTS `users` (
+  `id`         INT(11) NOT NULL AUTO_INCREMENT,
+  `fname`      VARCHAR(100) DEFAULT NULL,
+  `lname`      VARCHAR(100) DEFAULT NULL,
+  `username`   VARCHAR(100) DEFAULT NULL,
+  `email`      VARCHAR(100) DEFAULT NULL,
+  `password`   VARCHAR(255) DEFAULT NULL,
+  `role`       ENUM('admin','user') DEFAULT 'user',
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
+COMPLAINTS TABLE
+CREATE TABLE IF NOT EXISTS `complaints` (
+  `id`          INT(11) NOT NULL AUTO_INCREMENT,
+  `user_id`     INT(11) DEFAULT NULL,
+  `category`    VARCHAR(100) DEFAULT 'Others',
+  `description` TEXT DEFAULT NULL,
+  `status`      ENUM('Pending','Resolved') DEFAULT 'Pending',
+  `created_at`  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ------------------------------------------------------------
--- Make sure you are using the correct database
--- ------------------------------------------------------------
--- CREATE DATABASE IF NOT EXISTS `barangay_system`;
--- USE `barangay_system`;
+APPOINTMENTS TABLE
+CREATE TABLE IF NOT EXISTS `appointments` (
+  `id`               INT(11) NOT NULL AUTO_INCREMENT,
+  `user_id`          INT(11) DEFAULT NULL,
+  `purpose`          VARCHAR(255) DEFAULT NULL,
+  `service`          VARCHAR(100) DEFAULT NULL,
+  `appointment_date` DATE DEFAULT NULL,
+  `appointment_time` TIME DEFAULT NULL,
+  `status`           ENUM('Pending','Approved','Rejected') DEFAULT 'Pending',
+  `created_at`       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ------------------------------------------------------------
--- Add missing columns if they don't exist yet
--- ------------------------------------------------------------
-ALTER TABLE `complaints`
-  ADD COLUMN IF NOT EXISTS `category` varchar(100) DEFAULT 'Others' AFTER `user_id`;
+EMERGENCIES TABLE
+CREATE TABLE IF NOT EXISTS `emergencies` (
+  `id`          INT(11) NOT NULL AUTO_INCREMENT,
+  `user_id`     INT(11) DEFAULT NULL,
+  `type`        VARCHAR(100) NOT NULL,
+  `description` TEXT DEFAULT NULL,
+  `location`    VARCHAR(255) DEFAULT NULL,
+  `status`      ENUM('Urgent','Responding','Resolved') DEFAULT 'Urgent',
+  `created_at`  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-ALTER TABLE `appointments`
-  ADD COLUMN IF NOT EXISTS `purpose` varchar(255) DEFAULT NULL AFTER `id`,
-  ADD COLUMN IF NOT EXISTS `service` varchar(100) DEFAULT NULL AFTER `purpose`;
-
-ALTER TABLE `users`
-  ADD COLUMN IF NOT EXISTS `fname` varchar(100) DEFAULT NULL AFTER `id`,
-  ADD COLUMN IF NOT EXISTS `lname` varchar(100) DEFAULT NULL AFTER `fname`;
-
--- ------------------------------------------------------------
--- Default Admin Account
--- Username: admin
--- Password: password
--- Change the password after first login!
--- ------------------------------------------------------------
-INSERT IGNORE INTO `users` (`fname`, `lname`, `username`, `email`, `password`, `role`)
-VALUES (
-  'Barangay',
-  'Admin',
-  'admin',
-  'admin@barangay.com',
-  '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
-  'admin'
-);
-
--- ------------------------------------------------------------
--- Reset admin password (run this if you forgot your password)
--- ------------------------------------------------------------
--- UPDATE `users`
--- SET `password` = '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'
--- WHERE `username` = 'admin';
-
-COMMIT;
+ANNOUNCEMENTS TABLE
+CREATE TABLE IF NOT EXISTS `announcements` (
+  `id`         INT(11) NOT NULL AUTO_INCREMENT,
+  `title`      VARCHAR(255) DEFAULT NULL,
+  `content`    TEXT DEFAULT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
